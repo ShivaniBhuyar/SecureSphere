@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Optional
+from app.schemas.knowledge import KnowledgeEntryResponse
 
 class ThreatAnalysisRequest(BaseModel):
     type: str  # "url", "sms", "app", "email", "device"
@@ -16,3 +17,4 @@ class ThreatAnalysisResponse(BaseModel):
     indicators: List[str] = []
     recommendedAction: str = ""
     timestamp: Optional[str] = None
+    relatedKnowledgeEntries: Optional[List[KnowledgeEntryResponse]] = []
