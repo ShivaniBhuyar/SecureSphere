@@ -1,0 +1,26 @@
+# Backend Environment & Secrets
+.env
+.env.*
+*.env
+!*.env.example
+
+# Local SQLite databases
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+
+# Executables & Cloudflare tunnel binary
+*.exe
+cloudflared.exe
+
+# Python Cache & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+env/
