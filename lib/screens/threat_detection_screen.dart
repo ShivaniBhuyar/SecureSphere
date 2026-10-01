@@ -5,6 +5,7 @@ import '../models/threat_analysis_result.dart';
 import '../services/event_queue_service.dart';
 import '../services/online_threat_analyzer.dart';
 import '../services/threat_history_service.dart';
+import '../services/alert_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/threat_detection_hero.dart';
 import '../widgets/threat_result_card.dart';
@@ -22,6 +23,7 @@ class _ThreatDetectionScreenState extends State<ThreatDetectionScreen> {
   final _analyzer = OnlineThreatAnalyzer();
   final _historyService = ThreatHistoryService();
   final _eventQueueService = EventQueueService();
+  final _alertService = AlertService();
 
   ThreatDetectionState _state = ThreatDetectionState.waiting;
   MonitoringEvent? _selectedEvent;
@@ -146,6 +148,7 @@ class _ThreatDetectionScreenState extends State<ThreatDetectionScreen> {
           _currentResult = result;
         });
         _historyService.addResult(result);
+        _alertService.createAlertFromThreat(result);
       }
     } catch (e) {
       if (mounted) {

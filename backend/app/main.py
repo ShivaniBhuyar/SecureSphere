@@ -10,6 +10,7 @@ from app.services.knowledge_service import KnowledgeService
 from app.routes.health import router as health_router
 from app.routes.knowledge import router as knowledge_router
 from app.routes.threat import router as threat_router
+from app.routes.alert import router as alert_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,6 +44,7 @@ app.add_middleware(
 app.include_router(health_router, prefix="/api")
 app.include_router(knowledge_router, prefix="/api")
 app.include_router(threat_router, prefix="/api")
+app.include_router(alert_router, prefix="/api")
 
 @app.get("/")
 def root():

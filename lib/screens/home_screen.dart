@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
+import '../services/alert_service.dart';
 import '../widgets/guardian_hero.dart';
 import 'cyber_knowledge_screen.dart';
 
@@ -87,12 +89,26 @@ class HomeScreen extends StatelessWidget {
         ),
         Row(
           children: [
-            IconButton(
-              icon: Icon(Icons.notifications_none, color: isDark ? Colors.white : AppTheme.deepNavy),
-              onPressed: () => onNavigate(2), // Navigate to Alerts
+            Consumer<AlertService>(
+              builder: (context, alertService, child) {
+                final unread = alertService.unreadCount;
+                return IconButton(
+                  icon: Badge(
+                    isLabelVisible: unread > 0,
+                    label: Text('$unread'),
+                    backgroundColor: AppTheme.criticalRed,
+                    child: Icon(
+                      Icons.notifications_none,
+                      color: isDark ? Colors.white : AppTheme.deepNavy,
+                    ),
+                  ),
+                  tooltip: 'Safety Alerts',
+                  onPressed: () => onNavigate(3), // Navigate to Alerts (index 3)
+                );
+              },
             ),
             GestureDetector(
-              onTap: () => onNavigate(3), // Navigate to Profile
+              onTap: () => onNavigate(4), // Navigate to Profile (index 4)
               child: Container(
                 width: 36,
                 height: 36,

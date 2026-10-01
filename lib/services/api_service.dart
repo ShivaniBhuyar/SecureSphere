@@ -146,6 +146,95 @@ class ApiService {
     return null; // Signals caller to use local analyzer
   }
 
+  /// Sends a security alert to the backend for storage and history tracking.
+  Future<Map<String, dynamic>?> createAlert(
+    Map<String, dynamic> alertData, {
+    Duration timeout = const Duration(seconds: 4),
+  }) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('$_baseUrl/api/alerts'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(alertData),
+          )
+          .timeout(timeout);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Fetches security alerts from the backend.
+  Future<List<Map<String, dynamic>>?> getAlerts({
+    bool unreadOnly = false,
+    int limit = 50,
+    Duration timeout = const Duration(seconds: 4),
+  }) async {
+    try {
+      final uri = Uri.parse('$_baseUrl/api/alerts').replace(
+        queryParameters: {
+          'unread_only': unreadOnly.toString(),
+          'limit': limit.toString(),
+        },
+      );
+      final response = await http.get(uri).timeout(timeout);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List items = data['items'] ?? [];
+        return items.cast<Map<String, dynamic>>();
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Gets the unread alert count from the backend.
+  Future<int?> getUnreadAlertsCount({
+    Duration timeout = const Duration(seconds: 3),
+  }) async {
+    try {
+      final response = await http
+          .get(Uri.parse('$_baseUrl/api/alerts/unread-count'))
+          .timeout(timeout);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return (data['unreadCount'] as num?)?.toInt();
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Marks a specific alert as read on the backend.
+  Future<bool> markAlertRead(
+    String alertId, {
+    Duration timeout = const Duration(seconds: 3),
+  }) async {
+    try {
+      final response = await http
+          .patch(Uri.parse('$_baseUrl/api/alerts/$alertId/read'))
+          .timeout(timeout);
+      return response.statusCode == 200;
+    } catch (_) {}
+    return false;
+  }
+
+  /// Marks all alerts as read on the backend.
+  Future<bool> markAllAlertsRead({
+    Duration timeout = const Duration(seconds: 4),
+  }) async {
+    try {
+      final response = await http
+          .post(Uri.parse('$_baseUrl/api/alerts/mark-all-read'))
+          .timeout(timeout);
+      return response.statusCode == 200;
+    } catch (_) {}
+    return false;
+  }
+
   /// Converts backend JSON payload to a Flutter [KnowledgeEntry].
   KnowledgeEntry _parseKnowledgeEntry(Map<String, dynamic> json) {
     // Map category string to KnowledgeCategory enum
