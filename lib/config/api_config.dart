@@ -9,12 +9,13 @@ class ApiConfig {
   /// Base URL provided at compile-time via `--dart-define=API_BASE_URL=https://...`
   static const String compileTimeBaseUrl = String.fromEnvironment('API_BASE_URL');
 
-  /// Active public online HTTPS backend endpoint
+  /// Active public online HTTPS backend endpoint (deployed Render backend)
   static const String defaultOnlineUrl =
-      'https://evanescence-functional-sbjct-tournament.trycloudflare.com';
+      'https://securesphere-api-lgdw.onrender.com';
 
-  /// Standard cloud production domain template (e.g. Render / Railway)
-  static const String defaultProductionUrl = 'https://securesphere-api.onrender.com';
+  /// Standard cloud production domain (deployed Render backend)
+  static const String defaultProductionUrl =
+      'https://securesphere-api-lgdw.onrender.com';
 
   /// Local development loopback for ADB reverse or Desktop
   static const String localDevUrl = 'http://127.0.0.1:8000';

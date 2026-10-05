@@ -64,7 +64,7 @@ class ApiService {
   /// Checks if the backend is reachable and online.
   /// Automatically tries candidate URLs (production HTTPS, USB reverse, Wi-Fi LAN, emulator)
   /// and locks onto whichever is actively responding.
-  Future<bool> checkHealth({Duration timeout = const Duration(seconds: 3)}) async {
+  Future<bool> checkHealth({Duration timeout = const Duration(seconds: 4)}) async {
     // 1. Try current _baseUrl first
     if (await _probeUrl(_baseUrl, timeout: timeout)) {
       return true;
@@ -73,8 +73,12 @@ class ApiService {
     // 2. Try candidate fallback addresses
     for (final candidate in ApiConfig.candidateUrls) {
       if (candidate == _baseUrl) continue;
-      if (await _probeUrl(candidate, timeout: const Duration(seconds: 2))) {
+      if (await _probeUrl(candidate, timeout: timeout)) {
         _baseUrl = candidate;
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString(_prefBaseUrlKey, _baseUrl);
+        } catch (_) {}
         return true;
       }
     }
