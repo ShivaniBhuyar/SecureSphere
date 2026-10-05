@@ -11,6 +11,7 @@ from app.routes.health import router as health_router
 from app.routes.knowledge import router as knowledge_router
 from app.routes.threat import router as threat_router
 from app.routes.alert import router as alert_router
+from app.routes.chatbot import router as chatbot_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -45,6 +46,7 @@ app.include_router(health_router, prefix="/api")
 app.include_router(knowledge_router, prefix="/api")
 app.include_router(threat_router, prefix="/api")
 app.include_router(alert_router, prefix="/api")
+app.include_router(chatbot_router, prefix="/api")
 
 @app.get("/")
 def root():

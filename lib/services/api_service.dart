@@ -239,6 +239,57 @@ class ApiService {
     return false;
   }
 
+  /// Sends a cybersecurity query or incident message to the Module 6 AI Chatbot backend.
+  Future<Map<String, dynamic>?> sendChatMessage({
+    required String message,
+    String? conversationId,
+    Map<String, dynamic>? context,
+    Duration timeout = const Duration(seconds: 8),
+  }) async {
+    try {
+      final payload = <String, dynamic>{
+        'message': message,
+      };
+      if (conversationId != null) {
+        payload['conversationId'] = conversationId;
+      }
+      if (context != null) {
+        payload['context'] = context;
+      }
+
+      final response = await http
+          .post(
+            Uri.parse('$_baseUrl/api/chat'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(payload),
+          )
+          .timeout(timeout);
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Fetches default cybersecurity quick-prompt suggestions from backend.
+  Future<List<String>?> getChatSuggestions({
+    Duration timeout = const Duration(seconds: 4),
+  }) async {
+    try {
+      final response = await http
+          .get(Uri.parse('$_baseUrl/api/chat/suggestions'))
+          .timeout(timeout);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List list = data['suggestions'] ?? [];
+        return list.map((e) => e.toString()).toList();
+      }
+    } catch (_) {}
+    return null;
+  }
+
   /// Converts backend JSON payload to a Flutter [KnowledgeEntry].
   KnowledgeEntry _parseKnowledgeEntry(Map<String, dynamic> json) {
     // Map category string to KnowledgeCategory enum
