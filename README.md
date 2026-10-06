@@ -31,19 +31,34 @@ Status: ✅ Complete
 - Commit: `b0c88a08ca05da32d403ff97c58c31380fa83522`
 
 #### Module 6 — AI Chatbot
-Status: ⏳ Pending
+Status: ✅ Complete
+- Implemented
+- Tested
+- Committed
+- Pushed to GitHub
+- Deployed to Render
+- Live API verified successfully
+- Commit: `1cbeb27`
 
 #### Module 7 — Reports & Analytics
-Status: ⏳ Pending
+Status: ✅ Complete
+- Implemented
+- Tested
+- Committed
+- Commit: `64a0ff5`
 
 ---
 
-## 🚀 Completed Modules (Modules 1–5)
+## 🚀 Completed Modules (Modules 1–7)
 
 ### 🔹 Module 1: User Interface
 - **Material 3 Design System**: Custom security-themed UI with Dark and Light mode support, dynamic risk palettes, and smooth animations.
-- **Responsive Layout & Navigation**: Persistent bottom navigation layout featuring Home, Safety Guard, AI Assistant, Alerts, and Profile views.
-- **Profile & Preferences**: Local state persistence with `shared_preferences` and permission handling.
+- **Responsive Layout & Navigation**: Persistent 5-tab bottom navigation layout featuring Home, Safety Guard, AI Assistant, Alerts, and Profile views.
+- **Profile & Preferences**:
+  - **Privacy Information**: Direct access to privacy principles, local-first processing information, and permission explanations via `PermissionsScreen`.
+  - **Notification Preference Control**: User toggle for in-app floating security alert banners managed by `NotificationService`.
+  - **Voice Assistance Access**: Convenient navigation and guidance to AI Assistant microphone speech input and text-to-speech audio reader.
+  - **Security Reports Access**: Quick navigation entry point to comprehensive security reports and device score.
 
 ### 🔹 Module 2: Background Monitoring
 - **Guardian Status Hero**: Real-time visual indicator of device safety status and active protection level.
@@ -63,7 +78,7 @@ Status: ⏳ Pending
 - **Threat Education Hub**: Structured playbooks and proactive educational resources for emerging cyber threats.
 
 ### 🔹 Module 5: Alert & Notification
-- **Alert & Notification System**: Comprehensive security alert management, threat notification delivery, and incident tracking across client and backend.
+- **Alert & Notification System**: Comprehensive security alert management, in-app security alert banner delivery, and incident tracking across client and backend.
 - **Live Cloud Deployment**: Fully deployed to Render with live API endpoints operational and verified.
 - **Verification Details**:
   - Implemented
@@ -73,6 +88,36 @@ Status: ⏳ Pending
   - Deployed to Render
   - Live API verified successfully
   - **Commit**: `b0c88a08ca05da32d403ff97c58c31380fa83522`
+
+### 🔹 Module 6: AI Chatbot
+- **Conversational AI Guardian**: 24/7 cybersecurity incident guidance, fraud defense explanations, and real-time incident playbooks powered by FastAPI `/api/chatbot/message`.
+- **Knowledge Base & Alert Correlation**: Dynamic context linking to cybersecurity knowledge entries and device security alerts.
+- **Speech & Audio Support**: Speech-to-text voice query input and text-to-speech response playback.
+- **Incident Playbooks**: Step-by-step mitigation guidance for OTP fraud, UPI scam recovery, malicious app response, and phishing avoidance.
+- **Commit**: `1cbeb27`
+
+### 🔹 Module 7: Reports & Analytics
+- **Threat History**:
+  - Historical threat analysis records from device events and manual scans.
+  - Newest-first chronology with threat-type and severity filtering.
+  - Threat detail viewing with actionable remediation history and offline persistence.
+- **Security Reports**:
+  - Comprehensive security overview and overall security posture (*Protected*, *Warning*, *At Risk*).
+  - Activity statistics, threat metrics, and scan volume summaries.
+  - Exportable plain-text security digest for user incident records.
+- **Device Security Score**:
+  - Evaluated 0–100 security rating gauge based on threat frequency, severity, and defense engagement.
+  - Multi-factor evaluation: Incident History, Protection Status, Permissions, and Knowledge Base engagement.
+  - Risk visualization and prioritized security recommendations to improve device posture.
+- **Trends & Insights**:
+  - Multi-period scan and threat trends (7-day, 30-day, all-time).
+  - Threat severity distribution and data-driven security insights.
+- **Backend Reports APIs**:
+  - `GET /api/reports/summary`: Security overview and threat statistics.
+  - `GET /api/reports/history`: Paginated threat log history with type and level filters.
+  - `GET /api/reports/device-score`: Current device security score evaluation with factor breakdowns.
+  - `GET /api/reports/trends`: Chronological trend data points.
+- **Commit**: `64a0ff5`
 
 ---
 
@@ -160,7 +205,6 @@ pytest backend/tests/
 
 ---
 
-## 🗺️ Roadmap (Upcoming Modules)
-- **Module 6 — AI Chatbot**: ⏳ Pending — Conversational AI cybersecurity assistant and fraud safety companion.
-- **Module 7 — Reports & Analytics**: ⏳ Pending — Comprehensive security reports, incident history analytics, and risk posture summaries.
+## 🗺️ Roadmap & Project Status
+- **Modules 1–7 Completed**: All core modules outlined in the official SecureSphere architecture (UI, Background Monitoring, AI Threat Detection, Cyber Knowledge Base, Alert & Notification, AI Chatbot, and Reports & Analytics) are implemented, verified, and operational.
 
