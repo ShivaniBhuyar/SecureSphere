@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../services/alert_service.dart';
 import '../widgets/guardian_hero.dart';
 import 'cyber_knowledge_screen.dart';
+import 'reports_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final Function(int) onNavigate;
@@ -38,7 +39,10 @@ class HomeScreen extends StatelessWidget {
             ),
           SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 24.0,
+                vertical: 16.0,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -72,9 +76,9 @@ class HomeScreen extends StatelessWidget {
                 Text(
                   'SECURESPHERE',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1.5,
+                  ),
                 ),
               ],
             ),
@@ -82,8 +86,8 @@ class HomeScreen extends StatelessWidget {
             Text(
               'Your Digital Safety Guardian',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: isDark ? AppTheme.silver : Colors.grey.shade600,
-                  ),
+                color: isDark ? AppTheme.silver : Colors.grey.shade600,
+              ),
             ),
           ],
         ),
@@ -103,7 +107,8 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   tooltip: 'Safety Alerts',
-                  onPressed: () => onNavigate(3), // Navigate to Alerts (index 3)
+                  onPressed: () =>
+                      onNavigate(3), // Navigate to Alerts (index 3)
                 );
               },
             ),
@@ -117,7 +122,11 @@ class HomeScreen extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(color: AppTheme.electricCyan),
                 ),
-                child: const Icon(Icons.person, size: 20, color: AppTheme.electricCyan),
+                child: const Icon(
+                  Icons.person,
+                  size: 20,
+                  color: AppTheme.electricCyan,
+                ),
               ),
             ),
           ],
@@ -166,6 +175,19 @@ class HomeScreen extends StatelessWidget {
             );
           },
         ),
+        const SizedBox(height: 16),
+        _ActionCard(
+          title: 'SECURITY REPORTS',
+          subtitle: 'Device score, incident history & trend analytics',
+          icon: Icons.analytics_outlined,
+          color: AppTheme.softViolet,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ReportsScreen()),
+            );
+          },
+        ),
       ],
     );
   }
@@ -186,7 +208,11 @@ class HomeScreen extends StatelessWidget {
               color: AppTheme.safeGreen.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.lightbulb_outline, color: AppTheme.safeGreen, size: 20),
+            child: const Icon(
+              Icons.lightbulb_outline,
+              color: AppTheme.safeGreen,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -246,7 +272,9 @@ class _ActionCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(
-          color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.black.withValues(alpha: 0.05),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.05)
+              : Colors.black.withValues(alpha: 0.05),
         ),
       ),
       child: InkWell(
@@ -290,13 +318,24 @@ class _ActionCard extends StatelessWidget {
                       Row(
                         children: [
                           Container(
-                            width: 8, height: 8,
-                            decoration: BoxDecoration(color: AppTheme.safeGreen, shape: BoxShape.circle),
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: AppTheme.safeGreen,
+                              shape: BoxShape.circle,
+                            ),
                           ),
                           const SizedBox(width: 6),
-                          Text('Active', style: TextStyle(color: AppTheme.safeGreen, fontSize: 12, fontWeight: FontWeight.bold)),
+                          Text(
+                            'Active',
+                            style: TextStyle(
+                              color: AppTheme.safeGreen,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   ],
                 ),

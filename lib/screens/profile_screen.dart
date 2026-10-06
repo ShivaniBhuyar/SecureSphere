@@ -2,10 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/theme_service.dart';
 import '../services/profile_service.dart';
+import '../services/notification_service.dart';
 import '../theme/app_theme.dart';
+import 'reports_screen.dart';
+import 'permissions_screen.dart';
+import 'ask_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final NotificationService _notificationService = NotificationService();
+  late bool _notificationsEnabled;
+  bool _voiceAssistanceEnabled = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _notificationsEnabled = _notificationService.notificationsEnabled;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +33,10 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Your Profile', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Your Profile',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -40,11 +62,16 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     profileService.profile.email,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey),
                   ),
                   const SizedBox(height: 16),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: AppTheme.safeGreen.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
@@ -52,11 +79,18 @@ class ProfileScreen extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.shield, color: AppTheme.safeGreen, size: 16),
+                        const Icon(
+                          Icons.shield,
+                          color: AppTheme.safeGreen,
+                          size: 16,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           profileService.profile.protectionStatus,
-                          style: const TextStyle(color: AppTheme.safeGreen, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            color: AppTheme.safeGreen,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -64,9 +98,9 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 40),
-            
+
             // Sections
             _buildSectionHeader(context, 'ACCOUNT'),
             _buildListTile(
@@ -75,9 +109,9 @@ class ProfileScreen extends StatelessWidget {
               title: 'Edit Profile',
               onTap: () => _showEditProfileDialog(context, profileService),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             _buildSectionHeader(context, 'PREFERENCES'),
             ListTile(
               leading: const Icon(Icons.dark_mode, color: AppTheme.softViolet),
@@ -86,8 +120,14 @@ class ProfileScreen extends StatelessWidget {
                 value: themeService.themeMode,
                 underline: const SizedBox(),
                 items: const [
-                  DropdownMenuItem(value: ThemeMode.system, child: Text('System')),
-                  DropdownMenuItem(value: ThemeMode.light, child: Text('Light')),
+                  DropdownMenuItem(
+                    value: ThemeMode.system,
+                    child: Text('System'),
+                  ),
+                  DropdownMenuItem(
+                    value: ThemeMode.light,
+                    child: Text('Light'),
+                  ),
                   DropdownMenuItem(value: ThemeMode.dark, child: Text('Dark')),
                 ],
                 onChanged: (ThemeMode? mode) {
@@ -101,21 +141,100 @@ class ProfileScreen extends StatelessWidget {
               context,
               icon: Icons.mic,
               title: 'Voice Assistance',
-              trailing: Switch(value: true, onChanged: (val) {}, activeTrackColor: AppTheme.royalBlue.withValues(alpha: 0.5), activeThumbColor: AppTheme.royalBlue),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AskScreen()),
+                );
+              },
+              trailing: Switch(
+                value: _voiceAssistanceEnabled,
+                onChanged: (val) {
+                  setState(() {
+                    _voiceAssistanceEnabled = val;
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        val
+                            ? 'Voice assistance active. Tap mic on Ask tab to speak.'
+                            : 'Voice assistance muted in Ask tab.',
+                      ),
+                      action: SnackBarAction(
+                        label: 'OPEN ASK',
+                        textColor: AppTheme.electricCyan,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const AskScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+                },
+                activeTrackColor: AppTheme.royalBlue.withValues(alpha: 0.5),
+                activeThumbColor: AppTheme.royalBlue,
+              ),
             ),
             _buildListTile(
               context,
               icon: Icons.notifications,
               title: 'Notifications',
-              trailing: Switch(value: true, onChanged: (val) {}, activeTrackColor: AppTheme.royalBlue.withValues(alpha: 0.5), activeThumbColor: AppTheme.royalBlue),
+              trailing: Switch(
+                value: _notificationsEnabled,
+                onChanged: (val) {
+                  setState(() {
+                    _notificationsEnabled = val;
+                  });
+                  _notificationService.setNotificationsEnabled(val);
+                },
+                activeTrackColor: AppTheme.royalBlue.withValues(alpha: 0.5),
+                activeThumbColor: AppTheme.royalBlue,
+              ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
+            _buildSectionHeader(context, 'REPORTS & INSIGHTS'),
+            _buildListTile(
+              context,
+              icon: Icons.analytics_outlined,
+              title: 'Security Reports & Analytics',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ReportsScreen()),
+                );
+              },
+            ),
+
+            const SizedBox(height: 24),
+
             _buildSectionHeader(context, 'PRIVACY & ABOUT'),
-            _buildListTile(context, icon: Icons.privacy_tip, title: 'Privacy Information'),
-            _buildListTile(context, icon: Icons.info, title: 'About SecureSphere', trailing: const Text('v1.0.0')),
-            
+            _buildListTile(
+              context,
+              icon: Icons.privacy_tip,
+              title: 'Privacy Information',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const PermissionsScreen(),
+                  ),
+                );
+              },
+            ),
+            _buildListTile(
+              context,
+              icon: Icons.info,
+              title: 'About SecureSphere',
+              trailing: const Text('v1.0.0'),
+            ),
+
             const SizedBox(height: 40),
           ],
         ),
@@ -138,7 +257,13 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildListTile(BuildContext context, {required IconData icon, required String title, Widget? trailing, VoidCallback? onTap}) {
+  Widget _buildListTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    Widget? trailing,
+    VoidCallback? onTap,
+  }) {
     return ListTile(
       leading: Icon(icon, color: AppTheme.royalBlue),
       title: Text(title),
@@ -147,9 +272,16 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showEditProfileDialog(BuildContext context, ProfileService profileService) {
-    final nameController = TextEditingController(text: profileService.profile.name);
-    final emailController = TextEditingController(text: profileService.profile.email);
+  void _showEditProfileDialog(
+    BuildContext context,
+    ProfileService profileService,
+  ) {
+    final nameController = TextEditingController(
+      text: profileService.profile.name,
+    );
+    final emailController = TextEditingController(
+      text: profileService.profile.email,
+    );
 
     showDialog(
       context: context,

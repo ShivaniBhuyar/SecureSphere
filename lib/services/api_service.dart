@@ -6,6 +6,7 @@ import '../config/api_config.dart';
 import '../models/knowledge_entry.dart';
 import '../models/monitoring_event.dart';
 import '../models/threat_analysis_result.dart';
+import '../models/security_report.dart';
 
 /// Service connecting SecureSphere Flutter app to the FastAPI backend.
 /// Provides resilient network calls, configurable backend URL, and clean error handling.
@@ -48,7 +49,10 @@ class ApiService {
   }
 
   /// Probes an individual URL to see if it responds to /api/health
-  Future<bool> _probeUrl(String url, {Duration timeout = const Duration(seconds: 3)}) async {
+  Future<bool> _probeUrl(
+    String url, {
+    Duration timeout = const Duration(seconds: 3),
+  }) async {
     try {
       final response = await http
           .get(Uri.parse('$url/api/health'))
@@ -64,7 +68,9 @@ class ApiService {
   /// Checks if the backend is reachable and online.
   /// Automatically tries candidate URLs (production HTTPS, USB reverse, Wi-Fi LAN, emulator)
   /// and locks onto whichever is actively responding.
-  Future<bool> checkHealth({Duration timeout = const Duration(seconds: 4)}) async {
+  Future<bool> checkHealth({
+    Duration timeout = const Duration(seconds: 4),
+  }) async {
     // 1. Try current _baseUrl first
     if (await _probeUrl(_baseUrl, timeout: timeout)) {
       return true;
@@ -110,8 +116,9 @@ class ApiService {
     Duration timeout = const Duration(seconds: 5),
   }) async {
     try {
-      final uri = Uri.parse('$_baseUrl/api/knowledge/search')
-          .replace(queryParameters: {'q': query});
+      final uri = Uri.parse(
+        '$_baseUrl/api/knowledge/search',
+      ).replace(queryParameters: {'q': query});
       final response = await http.get(uri).timeout(timeout);
 
       if (response.statusCode == 200) {
@@ -247,9 +254,7 @@ class ApiService {
     Duration timeout = const Duration(seconds: 8),
   }) async {
     try {
-      final payload = <String, dynamic>{
-        'message': message,
-      };
+      final payload = <String, dynamic>{'message': message};
       if (conversationId != null) {
         payload['conversationId'] = conversationId;
       }
@@ -372,5 +377,129 @@ class ApiService {
       icon: icon,
       relatedEventTypes: relatedEvents,
     );
+  }
+
+  // ==========================================
+  // MODULE 7: REPORTS & ANALYTICS APIS
+  // ==========================================
+
+  /// Fetches an aggregated cybersecurity executive report summary from the backend.
+  Future<ReportSummary?> getReportSummary({
+    int days = 7,
+    Duration timeout = const Duration(seconds: 5),
+  }) async {
+    try {
+      final uri = Uri.parse(
+        '$_baseUrl/api/reports/summary',
+      ).replace(queryParameters: {'days': days.toString()});
+      final response = await http.get(uri).timeout(timeout);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        return ReportSummary.fromJson(data);
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Fetches historical threat analyses with optional filters.
+  Future<List<HistoricalThreatRecord>?> getThreatHistory({
+    int limit = 50,
+    int offset = 0,
+    String? eventType,
+    String? riskLevel,
+    Duration timeout = const Duration(seconds: 5),
+  }) async {
+    try {
+      final queryParams = <String, String>{
+        'limit': limit.toString(),
+        'offset': offset.toString(),
+      };
+      if (eventType != null &&
+          eventType.isNotEmpty &&
+          eventType.toLowerCase() != 'all') {
+        queryParams['event_type'] = eventType.toLowerCase();
+      }
+      if (riskLevel != null &&
+          riskLevel.isNotEmpty &&
+          riskLevel.toLowerCase() != 'all') {
+        queryParams['risk_level'] = riskLevel.toLowerCase();
+      }
+
+      final uri = Uri.parse(
+        '$_baseUrl/api/reports/history',
+      ).replace(queryParameters: queryParams);
+      final response = await http.get(uri).timeout(timeout);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        final List items = data['items'] ?? [];
+        return items
+            .map(
+              (item) =>
+                  HistoricalThreatRecord.fromJson(item as Map<String, dynamic>),
+            )
+            .toList();
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Computes and returns the SecureSphere Device Security Score.
+  Future<DeviceScoreData?> getDeviceSecurityScore({
+    Duration timeout = const Duration(seconds: 4),
+  }) async {
+    try {
+      final response = await http
+          .get(Uri.parse('$_baseUrl/api/reports/device-score'))
+          .timeout(timeout);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        return DeviceScoreData.fromJson(data);
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Evaluates device security score on-demand with live device metadata signals.
+  Future<DeviceScoreData?> evaluateDeviceSecurityScore({
+    required Map<String, dynamic> metadata,
+    Duration timeout = const Duration(seconds: 5),
+  }) async {
+    try {
+      final response = await http
+          .post(
+            Uri.parse('$_baseUrl/api/reports/device-score/evaluate'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'metadata': metadata}),
+          )
+          .timeout(timeout);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        return DeviceScoreData.fromJson(data);
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  /// Fetches time-series incident trends and automated security insights.
+  Future<TrendsReport?> getSecurityTrends({
+    int days = 7,
+    Duration timeout = const Duration(seconds: 5),
+  }) async {
+    try {
+      final uri = Uri.parse(
+        '$_baseUrl/api/reports/trends',
+      ).replace(queryParameters: {'days': days.toString()});
+      final response = await http.get(uri).timeout(timeout);
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        return TrendsReport.fromJson(data);
+      }
+    } catch (_) {}
+    return null;
   }
 }
